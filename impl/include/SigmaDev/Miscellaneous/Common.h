@@ -9,6 +9,8 @@
 #ifndef SIGMADEV_COMMON_H
 #define SIGMADEV_COMMON_H
 
-
+namespace sigmadev {
+    
+}
 
 #endif

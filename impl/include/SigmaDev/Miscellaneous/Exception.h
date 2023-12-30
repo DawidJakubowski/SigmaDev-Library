@@ -1,0 +1,7 @@
+
+#ifndef SIGMADEV_EXCEPTION_H
+#define SIGMADEV_EXCEPTION_H
+
+
+
+#endif

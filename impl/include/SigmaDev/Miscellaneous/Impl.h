@@ -16,11 +16,14 @@
 #include <memory>
 #include <string>
 #include <typeindex>
+#include <map>
+
 
 namespace sigmadev {
     /////////////////////////////
     // Forward Declarations
     class C_Class;
+    class C_Core;
     /////////////////////////////
     namespace impl {
         class _I_ClassImpl {
@@ -120,6 +123,31 @@ namespace sigmadev {
             }
         };
         /////////////////////////////
+        class _I_Reference {
+        public:
+            virtual std::type_index TypeIndexOfReference() const = 0;
+        protected:
+
+        };
+        template <typename REF>
+        class _C_Reference : public _I_Reference {
+        public:
+            _C_Reference(REF& ref) :ref(ref) {}
+            _C_Reference(REF* ref) :ref(*ref) {}
+
+            std::type_index TypeIndexOfReference() const override {
+                return std::type_index(typeid(REF));
+            }
+            inline const REF& Reference() const {
+                return ref;
+            }
+            inline REF& Reference() {
+                return ref;
+            }
+        protected:
+            REF& ref;
+        };
+        /////////////////////////////
     }
     /////////////////////////////
     class I_TypeInfo {
@@ -128,6 +156,7 @@ namespace sigmadev {
         virtual ~I_TypeInfo() = default;
 
         virtual std::type_index TypeIndexOfType() const = 0;
+        virtual const std::string& TrueName() const = 0;
     protected:
 
     };
@@ -140,24 +169,83 @@ namespace sigmadev {
         std::type_index TypeIndexOfType() const override {
             return type_info_impl->TypeIndexOfType();
         }
+        const std::string& TrueName() const override {
+            return type_info_true_name;
+        }
     protected:
         std::shared_ptr<impl::_I_TypeInfo> type_info_impl;
+        std::string type_info_true_name;
     };      
     /////////////////////////////
     class I_TypeInfos {
     public:
-    
+        I_TypeInfos() = default;
+        virtual ~I_TypeInfos() = default;
+
+
     protected:
 
     };
     /////////////////////////////
     class C_TypeInfos : public I_TypeInfos {
     public:
+        typedef std::map<std::string, std::shared_ptr<C_TypeInfo>> _TypeInfos;
 
     protected:  
 
     };
     /////////////////////////////  
+    class I_Reference {
+    public:     
+        I_Reference() = default;
+        virtual ~I_Reference() = default;
+
+        virtual bool IsInitialized() const = 0;
+        virtual bool IsEmpty() const = 0;
+        virtual std::type_index TypeIndexOfReference() const = 0;
+        virtual bool HasTypeIndex() const = 0;
+    protected:
+
+    };
+    /////////////////////////////
+    class C_Reference : public I_Reference {
+    public:
+        C_Reference() = default;
+        template <typename REFERENCE_TYPE>
+        C_Reference(REFERENCE_TYPE& reference) : reference_impl(new impl::_C_Reference<REFERENCE_TYPE>(reference)) {}
+        template <typename REFERENCE_TYPE>
+        C_Reference(REFERENCE_TYPE* pointer) : reference_impl(new impl::_C_Reference<REFERENCE_TYPE>(*pointer)) {}
+        virtual ~C_Reference() = default;
+
+        virtual bool IsInitialized() const override {
+            return reference_impl.operator bool();
+        }
+        virtual bool IsEmpty() const override {
+            return ! IsInitialized();
+        }
+        virtual std::type_index TypeIndexOfReference() const override {
+            if (reference_impl) {
+                return std::type_index(typeid(reference_impl->TypeIndexOfReference()));
+            } else {
+                return std::type_index(typeid(void));
+            }
+        }
+        virtual bool HasTypeIndex() const override {
+            return IsInitialized();
+        }
+    protected:
+        std::shared_ptr<impl::_I_Reference> reference_impl;
+    };
+    /////////////////////////////
+    template <typename THE_TYPE>
+    std::pair<int, bool> C_CreateTypeInfo(const std::string& the_type_name, C_Reference& reference) {
+        if (reference.TypeIndexOfReference() == std::type_index(typeid(C_Core))) {
+
+        } else {
+
+        }
+    }
+    
 }
 
 #endif

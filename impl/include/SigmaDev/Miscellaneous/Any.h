@@ -16,36 +16,94 @@ namespace sigmadev {
     /////////////////////////////
     class I_Any {
     public:
-        I_Any() = default;
-        virtual ~I_Any() = default;
-
         virtual std::type_index TypeIndexOfValue() const = 0;
+        virtual bool operator<(const I_Any& b) const = 0;
+        virtual bool operator<=(const I_Any& b) const = 0;
+        virtual bool operator>(const I_Any& b) const = 0;
+        virtual bool operator>=(const I_Any& b) const = 0;
+        virtual bool operator==(const I_Any& b) const = 0;
+        virtual bool operator!=(const I_Any& b) const = 0;
     protected:
 
     };
-    /////////////////////////////
     class C_Any : public I_Any {
     public:
         C_Any();
         template <typename VALUE>
-        C_Any(const VALUE& value) : value(value) {}
+        C_Any(const VALUE& value) : any_value(new impl::_C_AnyValue<VALUE>(value)) {}
         template <typename VALUE>
-        C_Any(VALUE&& value) : value(std::move(value)) {}
-
+        C_Any(VALUE&& value) : any_value(new impl::_C_AnyValue<VALUE>(std::move(value))) {}
         virtual ~C_Any() = default;
 
         template <typename VALUE>
-        void SetValue(const VALUE& value) {
-            this->value = std::shared_ptr<impl::_I_AnyValue>(new impl::_C_AnyValue<VALUE>(value));
+        inline void Set(const VALUE& value) {
+            if (!any_value.operator bool()) {
+                any_value = std::shared_ptr<impl::_I_AnyValue>(new impl::_C_AnyValue<VALUE>(value));
+            } else {
+                any_value = std::shared_ptr<impl::_I_AnyValue>(new impl::_C_AnyValue<VALUE>(value));
+            }
         }
         template <typename VALUE>
-        void MoveValue(VALUE&& value) {
-            this->value = std::shared_ptr<impl::_I_AnyValue>(new impl::_C_AnyValue<VALUE>(std::move(value)));
+        inline void Move(VALUE&& value) {
+            if (!any_value.operator bool()) {
+                any_value = std::shared_ptr<impl::_I_AnyValue>(new impl::_C_AnyValue<VALUE>(std::move(value)));
+            } else {
+                any_value = std::shared_ptr<impl::_I_AnyValue>(new impl::_C_AnyValue<VALUE>(std::move(value)));
+            }
         }
-
-        virtual std::type_index TypeIndexOfValue() const override;
+        template <typename VALUE>
+        inline const VALUE& Cast() const {
+            if (any_value) {
+                const impl::_C_AnyValue<VALUE>* c_any_value = dynamic_cast<const impl::_C_AnyValue<VALUE>*>(any_value.get());
+                if (c_any_value) [
+                    return c_any_value->GetValue();
+                ] else {
+                    //TODO: Throw Exception
+                }
+            } else {
+                //TODO: Throw Exception
+            }
+        }
+        template <typename VALUE>
+        inline VALUE& Cast() {
+            if (any_value) {
+                impl::_C_AnyValue<VALUE>* c_any_value = dynamic_cast<impl::_C_AnyValue<VALUE>*>(any_value.get());
+                if (c_any_value) {
+                    return c_any_value->GetValue();
+                } else {
+                    //TODO: Throw Exception
+                }
+            } else {
+                //TODO: Throw Exception
+            }
+        }
+        bool operator<(const I_Any& b) const override {
+            //TODO
+        }
+        bool operator<=(const I_Any& b) const override {
+            //TODO
+        }
+        bool operator>(const I_Any& b) const override {
+            //TODO
+        }
+        bool operator>=(const I_Any& b) const override {
+            //TODO
+        }
+        bool operator==(const I_Any& b) const override {
+            //TODO
+        }
+        bool operator!=(const I_Any& b) const override {
+            //TODO
+        }
+        std::type_index TypeIndexOfValue() const override {
+            if (any_value) {
+                return any_value->TypeIndexOfValue();
+            } else {
+                return std::type_index(typeid(void));
+            }
+        }
     protected:
-        std::shared_ptr<impl::_I_AnyValue> value;
+        std::shared_ptr<impl::_I_AnyValue> any_value;
     };
     /////////////////////////////
 }

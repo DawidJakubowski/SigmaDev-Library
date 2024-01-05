@@ -10,6 +10,7 @@
 #define SIGMADEV_ID_H
 
 #include <SigmaDev/Miscellaneous/Class.h>
+#include <SigmaDev/Miscellaneous/Impl.h>
 
 /////////////////////////////
 class I_ID {
@@ -26,6 +27,34 @@ public:
     virtual ~C_ID() = default;
 protected:
 
+};
+/////////////////////////////
+class I_IDS {
+public:
+    virtual std::size_t Count() const = 0;
+protected:
+
+};
+/////////////////////////////
+class C_IDS : public I_IDS {
+public:
+    typedef std::map<unsigned long long, C_ID> _IDS;
+
+    C_IDS() = default;
+    virtual ~C_IDS() = default;
+
+    std::size_t Count() const override {
+        return ids.size();
+    }
+
+    inline const _IDS& GetIDS() const {
+        return ids;
+    }
+    inline _IDS& GetIDS() {
+        return ids;
+    }
+protected:
+    _IDS ids;
 };
 /////////////////////////////
 

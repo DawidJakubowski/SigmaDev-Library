@@ -1,0 +1,11 @@
+/////////////////////////////////////////////////////
+///
+/// SigmaDev Library 
+/// Copyright © 2024 Dawid Jakubowski All Rights Reserved
+/// Under MIT License
+///
+/////////////////////////////////////////////////////
+
+int main(int argc, char* argv[]) {
+    return 0;
+}

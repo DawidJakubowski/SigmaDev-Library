@@ -11,6 +11,7 @@
 
 #include <memory>
 #include <typeindex>
+#include <SigmaDev/Miscellaneous/TypeIndex.h>
 
 namespace impl {
     class _SD_I_AnyValue {
@@ -87,7 +88,7 @@ public:
     template <typename VALUE>
     VALUE& Cast() {
         if (impl) {
-            impl::_SD_AnyValue<VALUE>* c_impl = dynamic_cast<impl::_SD_AnyValue<VALUE>*(impl.get());
+            impl::_SD_AnyValue<VALUE>* c_impl = dynamic_cast<impl::_SD_AnyValue<VALUE>*>(impl.get());
             if (c_impl) {
                 return c_impl->GetValue();
             }
@@ -107,12 +108,39 @@ public:
     template <typename VALUE>
     VALUE* CastPtr() {
         if (impl) {
-            impl::_SD_AnyValue<VALUE>* c_impl = dynamic_cast<impl::_SD_AnyValue<VALUE>*(impl.get());
+            impl::_SD_AnyValue<VALUE>* c_impl = dynamic_cast<impl::_SD_AnyValue<VALUE>*>(impl.get());
             if (c_impl) {
                 return &c_impl->GetValue();
             }
         }
         return nullptr;
+    }
+    template <typename VALUE>
+    void Set(const VALUE& value) {
+        if (impl) {
+            if (TypeIndexOf<VALUE>() == TypeIndexOfValue()) {
+                VALUE* ptr = CastPtr<VALUE>();
+                *ptr = value;
+                return;
+            }
+
+            impl.release();
+        }
+        impl = std::unique_ptr<impl::_SD_I_AnyValue>(new impl::_SD_AnyValue<VALUE>(value));
+    }
+    template <typename VALUE>
+    void Move(VALUE&& value) {
+        if (impl) {
+            if (TypeIndexOf<VALUE>() == TypeIndexOfValue()) {
+                impl::_SD_AnyValue<VALUE>* c_impl = dynamic_cast<impl::_SD_AnyValue<VALUE>*>(impl.get());
+                if (c_impl) {
+                    c_impl->MoveValue(std::move(value));
+                }
+            }
+
+            impl.release();
+        } 
+        impl = std::unique_ptr<impl::_SD_I_AnyValue>(new impl::_SD_AnyValue<VALUE>(std::move(value)));
     }
 protected:
     std::unique_ptr<impl::_SD_I_AnyValue> impl;

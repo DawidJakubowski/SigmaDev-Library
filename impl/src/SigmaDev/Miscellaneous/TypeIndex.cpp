@@ -1,0 +1,9 @@
+/////////////////////////////////////////////////////
+///
+/// SigmaDev Library 
+/// Copyright © 2024 Dawid Jakubowski All Rights Reserved
+/// Under MIT License
+///
+/////////////////////////////////////////////////////
+
+#include <SigmaDev/Miscellaneous/TypeIndex.h>

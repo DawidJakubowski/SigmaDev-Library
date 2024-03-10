@@ -11,6 +11,7 @@
 
 #include <string>
 
+/////////////////////////////////////////////////////
 class SD_I_Exception {
 public:
     virtual const std::string& ExceptionName() const = 0;
@@ -18,6 +19,7 @@ public:
 protected:
     
 };
+/////////////////////////////////////////////////////
 class SD_Exception : public SD_I_Exception {
 public:
     SD_Exception() = delete;
@@ -32,5 +34,6 @@ protected:
     std::string exception_name;
     std::string exception_description;
 };
+/////////////////////////////////////////////////////
 
 #endif // SIGMADEV_EXCEPTION_H

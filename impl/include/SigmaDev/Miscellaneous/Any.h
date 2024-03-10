@@ -13,7 +13,9 @@
 #include <typeindex>
 #include <SigmaDev/Miscellaneous/TypeIndex.h>
 
+/////////////////////////////////////////////////////
 namespace impl {
+    /////////////////////////////////////////////////////
     class _SD_I_AnyValue {
     public:
         _SD_I_AnyValue() = default;
@@ -24,6 +26,7 @@ namespace impl {
     protected:
 
     };
+    /////////////////////////////////////////////////////
     template <typename VALUE>
     class _SD_AnyValue : public _SD_I_AnyValue {
     public:
@@ -50,6 +53,7 @@ namespace impl {
     protected:
         VALUE value;
     };
+    /////////////////////////////////////////////////////
 }
 /////////////////////////////////////////////////////
 class SD_I_Any {
